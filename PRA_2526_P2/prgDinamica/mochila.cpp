@@ -1,6 +1,6 @@
 #include <iostream>
 #include <algorithm>
-#include <limits>
+#include <climits>
 #include <vector>
 
 using namespace std;
@@ -24,8 +24,8 @@ int mochila(vector <int> &p, vector <int> &v, int N, int M, vector <vector<int>>
 }
 
 int main(){
-	vector <int> p = {9, 6, 5};
-	vector <int> v = {38, 40, 24};
+	vector <int> p = {1, 2, 3, 8, 7, 4};
+	vector <int> v = {20, 5, 10, 40, 15, 25};
 	if(p.size() != v.size()) return -1; 
 	cout << "dame el peso maximo de la mochila: ";
 	int m; cin >> m;
