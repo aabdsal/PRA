@@ -3,16 +3,78 @@
 #include <cstdlib>
 #include <ctime>
 #include <fstream>
+#include <unistd.h>
 
 using namespace std;
 
 acortador::acortador(int n){
+    this->n = 0;
     links.resize(n);
     srand((unsigned)time(nullptr));
 }
-string acortador::añadir(string longUrl){
-    string clave; // clave alphanumerica
-    string key; // clave sin cambiar de decimal a ascii
+void acortador::portada(){
+
+    cout << endl << "************************************************************************************************" << endl;
+    cout << "************************************************************************************************" << endl;
+    cout << "*************************** A C O R T A D O R  U R L ' S  d e  A L I ***************************" << endl;
+    cout << "************************************************************************************************" << endl;
+    cout << "************************************************************************************************" << endl << endl;
+
+}
+void acortador::interfaz(){
+    
+    acortador a1(100); // inicializamos el vector a 100 posiciones
+    cout << endl << "Tiene 7 opciones a elegir:" << endl << endl;
+    cout << "1: Añadir Url                  2: Añadir Url's mediante fichero" << endl;
+    cout << "3: Buscar Url mediante clave   4: Borrar Url" << endl;
+    cout << "5: Número de Url's lmacenadas  6: Imprimir las urls Almacenadas" << endl;
+    cout << "7: Salir del programa" << endl << endl;
+
+    int n, i;
+    cout << "Elige: ";
+    cin >> n; 
+    cin.ignore();
+
+    string fich;     
+
+    switch (n)
+    {
+    case 1:
+        cout << "Dime la Url a añadir: "; cin >> fich;
+        añadir(fich);
+        break;
+    case 2:
+        cout << "Dime el nombre del fichero con los links: "; cin >> fich;
+        leerFichero(fich);
+        break;
+    case 3:
+        cout << "Dime la clave a buscar: "; cin >> fich;
+        i = buscar(fich);
+        break;
+    case 4:
+        cout << "Dime la clave con el Url a borrar: "; cin >> fich;
+        borrar(fich);
+        break;
+    case 5:
+        cout << "Número de Url's almacenadas: " << getN() << endl;
+        break;
+    case 6:
+        imprimirAlmacenadas();
+        break;
+    case 7:
+        exit(0);
+        break;
+    default:
+        cout << "Nº inválido" << endl;
+        interfaz();
+        break;
+    }
+    interfaz();
+}
+void acortador::generarClave(string &clave, string &key){
+    clave = "\0";
+    key = "\0";
+
     for (int i = 0; i < 7; i++)
     {
         int aleatorio = rand() % 2, a;
@@ -28,47 +90,78 @@ string acortador::añadir(string longUrl){
             key += to_string(a + '0');
         }
     }
-    
+}
+string acortador::añadir(string longUrl){
+
+    string clave; // clave alphanumerica
+    string key; // clave sin cambiar de decimal a ascii
+    generarClave(clave, key);
     long long n = stoll(key); // convertimos a entero para sacar la n, que es la pos del vector
      
-    long long c = hash(n);
-    links[c].first = clave;
-    links[c].second = longUrl;
+    int i = hash(n);
+    if (!links.empty()) // si no esta buit
+    {
+        linear(i, clave); // buscar la seguent posició buida
+    }
+
+    links[i].first = clave;
+    links[i].second = longUrl;
+    this->n++;
     
     return clave;
 }
 
 int acortador::buscar(string clave){
-    if(clave.size() != 7) {
-        cout << "El tamaño de la clave: " << clave << "es " << clave.size() << endl;
-        return -1;
-    }
-    string aux;
-
+    cout << endl << "Clave a buscar: " << clave << endl;
+    if(clave.size() != 7) throw runtime_error("Tamaño de clave inválido\n");
+    string key;
+    
     for (int i = 0; i < 7; i++)
     {
         char c = static_cast<char>(clave[i]);
-        if (isalpha(clave[i])) aux += to_string(static_cast<int>(c));
-        else aux += clave[i];
+        if (isalpha(clave[i])) key += to_string(static_cast<int>(c));
+        else key += clave[i];
     }
 
-    long long key = stoll(aux);
-    int i = hash(key);
-
-    if (links[i].second != "\0") cout << "El link con clave " << clave << " es el siguiente: " << links[i].second << endl << endl;
-    else return -1;
-    
+    long long n = stoll(key);
+    int i = hash(n);
+    if (links[i].first != clave){
+        cout << "Esta ocupada esa posición, posiblemente le hayamos hecho un hash lineal" << endl;
+        if(linear(i, clave) < 0){
+            cout << "La clave no se encuentra en la Base de Datos" << endl;
+            return -1;
+        }
+    }
+    cout << "El link con clave " << links[i].first << " es: " << links[i].second << endl;
     return i; // pa optimizar en borrar
 }
 
+int acortador::linear(int &i, string &clave){
+    int prev = i;
+    while (!links[i].second.empty()) // mientras no este vacio, soc moet
+    {
+        i = (i + 1) % links.size(); // movimiento circular, aixina fem una busqueda d (i a n) i de (0 a i)
+        if (clave == links[i].first) // pa la funcia de buscar
+        {
+            return i;
+        }
+        
+        if (i == prev){
+            return -1;
+        }
+    }
+    
+    return i;
+}
 void acortador::borrar(string clave){
     int key = buscar(clave);
-    if(key) // si esta la clave bien
+    if(key > -1) // si esta la clave bien
     {
         links[key].first = "\0";
         links[key].second = "\0";
-        cout << "Se ha borrado con éxito" << endl;
-    } else cout << "No existe esa clave,, por tanto no hay link guardado" << endl;
+        this->n--;
+        cout << "Se ha borrado con éxito✅" << endl;
+    } else cout << "No existe esa clave, por tanto no hay un link guardado" << endl;
 }
 
 void acortador::leerFichero(string fich){
@@ -80,23 +173,20 @@ void acortador::leerFichero(string fich){
     ofstream salida("acortados.txt");
     while(getline(fichero,l1)){
         string c1 = añadir(l1);
-        salida << "Link recortado: https//ali.ly//" << c1 << endl; // guardamos los links en un nuevo fichero
-        cout << "Link recortado: https//ali.ly//" << c1 << endl; 
+        salida << "https//ali.ly//" << c1 << endl; // guardamos los links en un nuevo fichero
     }
-    cout << endl;
     fichero.close();
-    
-    ifstream check("acortados.txt");
-    string l2;
-    while(getline(check,l2)){
-        l2 = l2.substr(31);
-        int i = buscar(l2);
-        if (i < 0) throw runtime_error("Clave Inválida:" + l2);
-    }
-    salida.close();
-    // me falta probar lo de borrar
+    cout << "Url's añadidas con éxito ✅" << endl;
 }
-
+void acortador::imprimirAlmacenadas(){
+    for (int i = 0; i < links.size(); i++)
+    {
+        if (!links[i].second.empty()) // si no esta vacio
+        {
+            cout << links[i].second << endl;
+        }
+    }
+}
 int acortador::getN(){
     return this->n;
-}
+} 
