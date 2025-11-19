@@ -88,4 +88,15 @@ class ListArray : public List<T> {
 		resize(n);
 		return res;
 	}
+
+	void duplicate_list() override{
+		
+		resize(n*2);
+		for(int i = 0; i < n; i++){
+			if(n!=max){
+				arr[n] = arr[i];
+				n++;
+			}
+		}
+	}
 };

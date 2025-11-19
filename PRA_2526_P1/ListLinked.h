@@ -118,5 +118,26 @@ class ListLinked : public List<T> {
         	n--;
     	}
 		return res;
-	}  
+	}
+	void duplicate_list() override{
+	     Node<T>* prev = nullptr;
+             Node<T>* aux = first;
+		int i = 0;
+      	               				
+            while(aux != nullptr && i < n){
+                prev = aux; // apuntar al nodo en el que estamos
+                aux = aux -> next; // avanzar al siguiente nodo y usamos su data
+		i++;
+          }
+		Node<T>* info = first;
+		
+		while(i < n * 2 ){
+			Node<T>* newNode  = new Node<T>(info->data,aux); // insertamos nuevo nodo
+			prev->next = newNode;
+			prev = newNode; // soc un desmayat
+			info = info->next;
+			i++;
+		}
+		n = i; 
+	}
 };
