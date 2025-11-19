@@ -4,6 +4,7 @@
 #include <ctime>
 #include <fstream>
 #include <unistd.h>
+#include <chrono>
 
 using namespace std;
 
@@ -12,6 +13,7 @@ acortador::acortador(int n){
     links.resize(n);
     srand((unsigned)time(nullptr));
 }
+
 void acortador::portada(){
 
     cout << endl << "************************************************************************************************" << endl;
@@ -21,6 +23,7 @@ void acortador::portada(){
     cout << "************************************************************************************************" << endl << endl;
 
 }
+
 void acortador::interfaz(){
     
     acortador a1(100); // inicializamos el vector a 100 posiciones
@@ -62,8 +65,8 @@ void acortador::interfaz(){
         imprimirAlmacenadas();
         break;
     case 7:
-        exit(0);
-        break;
+        cout << "Saliendo..." << endl;
+        return;
     default:
         cout << "Nº inválido" << endl;
         interfaz();
@@ -107,7 +110,7 @@ string acortador::añadir(string longUrl){
     links[i].first = clave;
     links[i].second = longUrl;
     this->n++;
-    
+
     return clave;
 }
 
@@ -165,7 +168,7 @@ void acortador::borrar(string clave){
 }
 
 void acortador::leerFichero(string fich){
-    
+    auto start = chrono::high_resolution_clock::now();
     ifstream fichero(fich);
     if (!fichero.is_open()) throw runtime_error("No se ha podido abrir el archivo");
     
@@ -177,7 +180,13 @@ void acortador::leerFichero(string fich){
     }
     fichero.close();
     cout << "Url's añadidas con éxito ✅" << endl;
+    auto end = chrono::high_resolution_clock::now();
+    // me falta la part opcional de rebollin
+    auto lapse = chrono::duration_cast<chrono::seconds>(end - start);
+
+    cout << "Tiempo requerido para añadir las Url's: " << lapse.count() << endl;
 }
+
 void acortador::imprimirAlmacenadas(){
     for (int i = 0; i < links.size(); i++)
     {
