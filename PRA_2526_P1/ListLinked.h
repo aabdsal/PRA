@@ -108,7 +108,7 @@ class ListLinked : public List<T> {
         	aux = aux->next; // avancem hasta el nodo que volem eliminar
 			i++; // contador
    		}
-		T res = 0;
+		T res;
     	if (aux != nullptr) { // si aux apunta al nodo
         	if (aux == first) first = aux->next; // si es el primer cas
 			else prev->next = aux->next; // bypass per a que el de antes apunte al de després
@@ -127,7 +127,7 @@ class ListLinked : public List<T> {
             while(aux != nullptr && i < n){
                 prev = aux; // apuntar al nodo en el que estamos
                 aux = aux -> next; // avanzar al siguiente nodo y usamos su data
-		i++;
+				i++;
           }
 		Node<T>* info = first;
 		

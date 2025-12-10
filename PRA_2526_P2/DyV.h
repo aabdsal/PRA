@@ -27,7 +27,7 @@ int Partition(vector <T> &v, int ini, int fin){
 			swap(v[i], v[j]);
 			i += 1;
 		}
-        }
+    }
 	swap(v[i],v[fin]);
 	return i;
 }
@@ -36,8 +36,8 @@ template <typename T>
 void QuickSort(vector <T> &v, int ini, int fin){
 
         if(ini < fin){
-                int pivot = Partition(v, ini, fin);
-                QuickSort(v, ini, pivot- 1);
-                QuickSort(v, pivot + 1, fin);
+            int pivot = Partition(v, ini, fin);
+            QuickSort(v, ini, pivot- 1);
+            QuickSort(v, pivot + 1, fin);
         }
 }
