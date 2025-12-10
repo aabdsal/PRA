@@ -26,8 +26,8 @@ class BSTreeDict: public Dict<V> {
         return tree->search(aux).value;
     }
     V remove(string key)override{
-        V pos = search(aux);
         TableEntry<V> aux = TableEntry<V>(key);
+        V pos = search(key);
         tree->remove(aux);
         return pos;
     }
